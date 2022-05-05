@@ -2,7 +2,7 @@
 static char * haskell_20_xpm[] = {
 "20 20 2 1",
 " 	c None",
-".	c #fb4934",
+".	c #8ec07c",
 "                    ",
 "                    ",
 "                    ",
@@ -23,4 +23,3 @@ static char * haskell_20_xpm[] = {
 "                    ",
 "                    ",
 "                    "};
-
