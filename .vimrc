@@ -1,14 +1,14 @@
 syntax on
 set number relativenumber
 set numberwidth=5
-"set cursorline
-"set cursorcolumn
-"set mouse=a        " Enable mouse mode
 set autoindent
+set cursorline
+"set cursorcolumn
+"set mouse=a       
 set nowrap
 set nobackup
 set noswapfile
-set colorcolumn=120
+set colorcolumn=100
 set noshowmode
 set laststatus=2
 set belloff=all
@@ -24,7 +24,6 @@ set shiftwidth=4   " Indentation size
 set softtabstop=4  " Tabs/Spaces interop
 set expandtab      " Expands tab to spaces
 set smarttab       " Better tabs
-"}}}
 
 " Plugins {{{
 call plug#begin('~/.vim/plugged')
@@ -32,6 +31,7 @@ Plug 'dracula/vim'
 Plug 'itchyny/lightline.vim'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
+Plug 'jiangmiao/auto-pairs'
 Plug 'alvan/vim-closetag'
 Plug 'lilydjwg/colorizer'
 call plug#end()
@@ -40,5 +40,5 @@ call plug#end()
 " ColorScheme and backgrounds {{{
 set background=dark
 colorscheme dracula
-hi Normal guibg=NONE ctermbg=NONE
+hi Normal ctermbg=NONE
 "}}}
