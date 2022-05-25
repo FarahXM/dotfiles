@@ -15,7 +15,7 @@ Config {
        , hideOnStart    = False
        , allDesktops    = True
        , persistent     = True
-       , iconRoot       = "/home/xarch/.xmonad/xmobar/xpm/"  -- default: "[NERD]"
+       , iconRoot       = "/home/xarch/.config/xmobar/xpm/"  -- default: "[NERD]"
        , commands       = [ Run Date "<fn=2>\xf017</fn> %b %d %Y  %H:%M:%S" "date" 10
                             , Run Cpu ["-t", "<fn=2>\xf108</fn>  CPU: (<total>%)","-H","50","--high","red"] 20
                             , Run Memory ["-t", "<fn=2>\xf233</fn>  MEM: (<usedratio>%)"] 20
