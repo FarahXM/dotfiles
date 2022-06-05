@@ -8,6 +8,7 @@
 --------------------------------------------------------------------
 ---------- base -----------
 import XMonad
+import Control.Monad (liftM2)
 import qualified XMonad.StackSet as W
 
 -------- Actions ---------
@@ -15,12 +16,15 @@ import XMonad.Actions.UpdatePointer
 import XMonad.Actions.FindEmptyWorkspace
 import XMonad.Actions.WithAll (killAll, sinkAll)
 import XMonad.Actions.Minimize
+import XMonad.Actions.WindowGo (raiseBrowser)
+import XMonad.Actions.CycleWS
 
 --------- Hooks ----------
 import XMonad.ManageHook (doFloat)                                                              --for manageHook
 import XMonad.Hooks.ManageHelpers (doCenterFloat, doFullFloat, isFullscreen)                    --for manageHook
 import XMonad.Hooks.ManageDocks (avoidStruts, docks)                                            --for xmobar
 import XMonad.Hooks.DynamicLog (dynamicLogWithPP, xmobarPP, xmobarColor, wrap, shorten, PP(..)) --for xmobar
+import XMonad.Hooks.FadeInactive                                                                --for Trancperncy Window (Need Compositor Like "picom" )
 
 -------- Utilities --------
 import XMonad.Util.NamedScratchpad
@@ -30,6 +34,8 @@ import XMonad.Util.SpawnOnce (spawnOnce)                                        
 import XMonad.Util.Cursor                                                                       -- Normal Cursor
 
 ----- Layouts/Modifiers ----
+import XMonad.Layout.ComboP
+import XMonad.Layout.Master
 import XMonad.Layout.PerWorkspace                                                               
 import XMonad.Layout.Maximize
 import XMonad.Layout.Minimize
@@ -43,24 +49,33 @@ import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 
 --------- layout ---------
+import XMonad.Layout.NoFrillsDecoration
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.OneBig
+import XMonad.Layout.TwoPanePersistent
+import XMonad.Layout.TwoPane
 import XMonad.Layout.Tabbed
+import XMonad.Layout.Simplest
 import XMonad.Layout.SimplestFloat
+import XMonad.Layout.Circle
+import XMonad.Layout.Dishes
+import XMonad.Layout.HintedGrid
+import XMonad.Layout.Dwindle                                                                                    -- like Layout Spiral
+import XMonad.Layout.Accordion
 
 ------------------------------------------- Color Pallatte ------------------------------------------------
 --- One Pallate ---
-bg          = "#11121D"
-fg          = "#a9b1d6"
-black       = "#32344a"
-red         = "#f7768e"
-green       = "#9ece6a"
-yellow      = "#e0af68"
-blue        = "#7aa2f7"
-magenta     = "#ad8ee6"
-cyan        = "#449dab"
-white       = "#787c99"
+bg            = "#11121D"
+fg            = "#a9b1d6"
+black         = "#32344a"
+red           = "#f7768e"
+green         = "#9ece6a"
+yellow        = "#e0af68"
+blue          = "#7aa2f7"
+magenta       = "#ad8ee6"
+cyan          = "#449dab"
+white         = "#787c99"
 
 
 --- Two Pallate ---
@@ -76,7 +91,7 @@ white_       = "#acb0d0"
 --------------------------------------------- Variable XMonad --------------------------------------------
 myModMask       = mod1Mask                                                          -- Sets Mod Key to alt/Super/Win/Fn.
 myTerminal      = "alacritty"                                                       -- Sets default Terminal Emulator.
-myBorderWidth   = 1                                                                 -- Sets Border Width in pixels.
+myBorderWidth   = 0                                                                 -- Sets Border Width in pixels.
 myNormalColor   = bg                                                                -- Border color of normal windows.
 myFocusedColor  = blue                                                              -- Border color of focused windows.
 myFont          = "xft:JetBrains Mono:Regular:size=10"
@@ -86,16 +101,16 @@ windowCount     = gets $ Just . show . length . W.integrate' . W.stack . W.works
 
 
 ------ Workspaces -------
-wsDEV           = "¹DEV "
-wsGIT           = "²GIT "
-wsWEB           = "³WEB "
-wsYTB           = "⁴YTB "
-wsCHT           = "⁵CHT "
-wsMSC           = "⁶MSC "
-wsVED           = "⁷VED "
-wsSIT           = "⁸SIT "
-wsGME           = "⁹GME "
--- myWorkspaces    = [wsDEV,wsGIT,wsWEB,wsYTB,wsCHT,wsMSC,wsVED,wsSIT]
+-- wsDEV           = "¹DEV"
+-- wsGIT           = "²GIT"
+-- wsWEB           = "³WEB"
+-- wsYTB           = "⁴YTB"
+-- wsCHT           = "⁵CHT"
+-- wsMSC           = "⁶MSC"
+-- wsVED           = "⁷VED"
+-- wsSIT           = "⁸SIT"
+-- wsGME           = "⁹GME"
+-- myWorkspaces    = [wsDEV,wsGIT,wsWEB,wsYTB,wsCHT,wsMSC,wsVED,wsSIT, wsGME]
 myWorkspaces = [" 1 ", " 2 ", " 3 ", " 4 ", " 5 ", " 6 ", " 7 ", " 8 ", " 9 "] 
 
 ------------------------------------------ AutoStart App --------------------------------------------------
@@ -103,7 +118,7 @@ myStartupHook = do
     spawnOnce "dunst"                                                               -- notfiction
     spawnOnce "unclutter"                                                           -- hidden Mouse
     spawnOnce "nitrogen --restore"                                                  -- feh is the alternative "feh --bg-scale /directory/of/desired/background &"
-    spawnOnce "xset r rate 200 60"                                                  -- speeds cursor in urxvt
+    spawnOnce "xset r rate 300 55"                                                  -- speeds cursor in urxvt
     spawnOnce "picom --experimental-backends"                                       -- Compositor
     setDefaultCursor xC_left_ptr                                                    -- Default Cursor
 
@@ -117,6 +132,24 @@ myShowWNameTheme = def
                 , swn_color             = blue
                 }
 
+myTopBar = noFrillsDeco shrinkText myTopBarTheme
+myTopBarTheme = def { fontName      = myFont
+              , activeColor         = blue
+              , activeBorderColor   = blue
+              , activeBorderWidth   = 20
+              , activeTextColor     = bg
+              , inactiveColor       = black
+              , inactiveBorderColor = black
+              , inactiveBorderWidth = 20
+              , inactiveTextColor   = bg
+              , urgentColor         = red
+              , urgentBorderColor   = red
+              , urgentBorderWidth   = 20
+              , urgentTextColor     = red
+              , decoWidth           = 20
+              , decoHeight          = 20
+}
+
 -------------------- Base Layout ------------------------
 myTabTheme      = def
                 { fontName              = myFont
@@ -128,7 +161,7 @@ myTabTheme      = def
                 , inactiveTextColor     = fg
                 }
 
-tab             = renamed [Replace "TABBED"]      
+tabs            = renamed [Replace "TABBED"]      
                 $ noBorders
                 $ maximizeWithPadding 16 
                 $ minimize 
@@ -136,29 +169,72 @@ tab             = renamed [Replace "TABBED"]
                 $ tabbed shrinkText myTabTheme
 
 threeColMid     = renamed [Replace "THREECOLMID"] 
+                $ myTopBar
                 $ maximizeWithPadding 16 
                 $ minimize 
                 $ mySpacings 
                 $ ThreeColMid 1 (3/100) (1/2)
 
 oneBig          = renamed [Replace "ONEBIG"]      
+                $ myTopBar
                 $ maximizeWithPadding 16 
                 $ minimize 
                 $ mySpacings 
                 $ OneBig (3/4) (3/4)
 
-tiled           = renamed [Replace "TILD"]  
+tall            = renamed [Replace "TILD"]  
+                $ myTopBar
                 $ maximizeWithPadding 16 
                 $ minimize 
                 $ mySpacings 
                 $ ResizableTall 1 (3/100) (1/2) []
 
-simpleFloat     =  renamed [Replace "FLOAT"]    
+twoPane         = renamed [Replace "TWOPANE"]
+                $ myTopBar
+                $ maximizeWithPadding 16
+                $ minimize
+                $ mySpacings
+                $ TwoPanePersistent Nothing (3/100) (1/2)
+
+dishes          = renamed [Replace "DISHES"]
+                $ myTopBar
+                $ maximizeWithPadding 16
+                $ minimize
+                $ mySpacings
+                $ Dishes 2 (1/5)
+
+circle          = renamed [Replace "CIRCLE"]
+                $ myTopBar
+                $ maximizeWithPadding 16
+                $ minimize
+                $ mySpacings
+                $ Circle
+
+
+floats          =  renamed [Replace "FLOAT"]    
+                $ myTopBar
                 $ maximizeWithPadding 16 
                 $ minimize 
                 $ myGaps 
                 $ mySpacings 
                 $ simplestFloat
+
+grid            = renamed [Replace "GRID"]
+                $ myTopBar
+                $ mySpacings
+                $ maximizeWithPadding 16
+                $ maximize
+                $ minimize
+                $ limitWindows 12
+                $ GridRatio (4/3) False
+
+spirals         = renamed [Replace "spirals"]
+                $ myTopBar
+                $ maximizeWithPadding 16
+                $ maximize
+                $ minimize
+                $ mySpacings
+                $ Dwindle R CW 1.5 1.1
 
 full            = renamed [Replace "FULL"]       
                 $ maximizeWithPadding 16 
@@ -166,20 +242,56 @@ full            = renamed [Replace "FULL"]
                 $ mySpacings 
                 $ limitWindows 20 Full
 
+    --------- Compine Layout ------------
+masterTabbed    = renamed [Replace "MASTER TABBED"]       
+                $ maximizeWithPadding 16 
+                $ minimize 
+                $ mySpacings 
+                $ mastered (1/100) (1/2) $ tabbed shrinkText myTabTheme
+
+oneUp           = renamed [Replace "1UP"]
+                $ myTopBar
+                $ myGaps
+                $ mySpacings
+                $ combineTwoP (ThreeCol 1 (3/100) (1/2))
+                                    (Simplest)
+                                    (Tall 1 0.03 0.5)
+                                    (ClassName "firefox")
+
+twoTabbed       = renamed [Replace "TWO TABBED"]
+                $ mySpacings
+                $ combineTwoP (TwoPane 0.03 0.5) 
+                              (tabbed shrinkText myTabTheme) 
+                              (tabbed shrinkText myTabTheme) 
+                              (ClassName "firefox")
+
 ---------------------------- Usage ------------------------------
-codeLayouts     = tiled ||| oneBig ||| threeColMid ||| tab
-allLayout       = threeColMid ||| oneBig ||| tiled ||| tab |||simpleFloat ||| full
+allLayouts = tall ||| full ||| twoPane ||| threeColMid ||| oneBig ||| dishes ||| grid
+webLayouts = oneBig ||| threeColMid ||| dishes ||| tall
+codeLayouts = tabs ||| twoPane ||| dishes
+chatLayouts = grid ||| threeColMid ||| tall
+youtubeLayouts = oneBig ||| full
+settingsLayouts = circle ||| grid ||| spirals ||| floats
+mediaLayout = circle ||| spirals ||| floats
+gameLayout  = masterTabbed |||floats
+
 myLayoutHook    = showWName' myShowWNameTheme
                 $ mkToggle (NOBORDERS ?? FULL ?? EOT)
                 $ limitWindows 12
                 $ avoidStruts
-                $ onWorkspace (myWorkspaces !! 0) codeLayouts
-                $ allLayout
+                $ onWorkspace " 1 " codeLayouts
+                $ onWorkspace " 2 " mediaLayout
+                $ onWorkspace " 9 " gameLayout
+                $ onWorkspaces [" 3 "," 4 "] webLayouts
+                $ onWorkspaces [" 5 "," 6 "] chatLayouts
+                $ onWorkspaces [" 7 "," 8 "] settingsLayouts
+                $ allLayouts
 
 --------------------------------------------------  keyBidings --------------------------------------------
 myKeys =            -- Programme --
-         [ ("M-w",          spawn "firefox"                         )
+         [ ("M-w",          raiseBrowser)
          , ("M-S-f",        spawn "alacritty -e nnn"                )
+         , ("M-S-m",        spawn "alacritty -e cmus"                )
          , ("M-d",          spawn "rofi -show drun -Show-icons"     )
          , ("M-S-d",        spawn "dmenu_run -fn 'JetBrains Mono:style=Bold:pixelsize=12' -nb '#11121D' -nf '#7aa2f7' -sb '#7aa2f7' -sf '#11121D' -p 'CMD:'")
 
@@ -192,7 +304,7 @@ myKeys =            -- Programme --
          , ("<F8>",         spawn "pactl set-sink-volume @DEFAULT_SINK@ -10% && notify-send -t 200 `pulsemixer --get-volume | awk '{print $1}'`" )
          , ("<F9>",         spawn "pactl set-sink-volume @DEFAULT_SINK@ +10% && notify-send -t 200 `pulsemixer --get-volume | awk '{print $1}'`" )
          , ("<F10>",        spawn "pactl set-source-mute @DEFAULT_SOURCE@ toggle  && notify-send -t 200 'Toggle mute Mic button'"     )
-         , ("M-C-m",        spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle && notify-send -t 200 'Toggle mute button!'"             )
+         , ("<F11>",        spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle && notify-send -t 200 'Toggle mute button!'"             )
 
                     -- Brightenss --
         , ("<F4>",          spawn "xbacklight -set 50 && notify-send -t 200 `xbacklight -get`")
@@ -205,7 +317,16 @@ myKeys =            -- Programme --
          , ("C-0",          spawn "bash ~/.scripts/rofi/powerMenu.sh")
                
 				    -- Scratchpads --
-         , ("M-s t", namedScratchpadAction myScratchPads "terminal")  
+         , ("M-s t",        namedScratchpadAction myScratchPads "terminal")  
+         , ("M-s s",        namedScratchpadAction myScratchPads "cmus")        
+            
+                            -- cmus --
+         , ("C-S-z",         spawn "cmus-remote -r")
+         , ("C-S-x",         spawn "cmus-remote -p")
+         , ("C-S-c",         spawn "cmus-remote -u")
+         , ("C-S-v",         spawn "cmus-remote -s")
+         , ("C-S-b",         spawn "cmus-remote -n")
+
 
                     --  Modifiers Layout --
          , ("M-f",          sendMessage $ Toggle FULL               ) {--Full Screen --}
@@ -216,6 +337,7 @@ myKeys =            -- Programme --
          , ("M-S-n",        withLastMinimized maximizeWindowAndFocus   ) {-- For Minimize && Action minimize --}
          , ("M-S-a",        killAll                                 ) {-- Quite All --}
          , ("M-S-t",        sinkAll                                 ) {-- Push ALL floating windows to tile.--}
+         , ("M-S-s",        sendMessage $ SwapWindow                ) {-- Compine Two Layout [XM-comboP]--}
 
                     -- Resize layout --
          , ("M-C-j",        sendMessage MirrorShrink) {-- For Layout ResizableTile( Tiled ) -}
@@ -223,8 +345,10 @@ myKeys =            -- Programme --
          ]
 
 --------------------------------------------------- ManageHook --------------------------------------------
-myManageHook = composeAll
-     [ className =? "mpv"               --> doCenterFloat
+myManageHook = composeAll 
+       [className =? "Thunar"            --> doViewShift " 2 "
+     --, className =? "firefox"           --> doViewShift " 3 "
+     , className =? "mpv"               --> doCenterFloat
      , className =? "Sxiv"              --> doCenterFloat
      , className =? "Nitrogen"          --> doCenterFloat
      , className =? "download"          --> doFloat
@@ -232,8 +356,11 @@ myManageHook = composeAll
      , className =? "Gimp"              --> doFloat
      , className =? "notification"      --> doFloat
      ] <+> namedScratchpadManageHook myScratchPads
+    where
+     doViewShift = doF . liftM2 (.) W.view W.shift
 -------------------------------------------------- ScratchPads -------------------------------------------
 myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm
+                , NS "cmus" spawnCmus findCmus manageCmus
                 ]
   where
     spawnTerm  = myTerminal ++ " -t scratchpad"
@@ -244,6 +371,15 @@ myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm
                  w = 0.9
                  t = 0.95 -h
                  l = 0.95 -w
+    spawnCmus   = myTerminal ++ " -t cmus -e cmus"
+    findCmus    = title =? "cmus"
+    manageCmus  = customFloating $ W.RationalRect l t w h
+               where
+                 h = 0.9
+                 w = 0.9
+                 t = 0.95 -h
+                 l = 0.95 -w
+
 
 -------------------------------------------------- Aplicy All   -------------------------------------------
 main = do
@@ -274,8 +410,9 @@ main = do
                                                        , ppTitle = xmobarColor blue_ "" . shorten 40
                                                        -- Separator character
                                                        , ppSep =  "<fc=" ++ cyan_ ++ "> <fn=1>|</fn> </fc>"
-                                                       -- Urgent workspace
+                                                       -- WS Separator 
                                                        , ppWsSep = "  "
+                                                       -- Urgent workspace
                                                        , ppUrgent = xmobarColor fg "" . wrap "!" "!"
                                                        -- Adding # of windows on current workspace to the bar
                                                        , ppExtras  = [windowCount]
@@ -283,7 +420,8 @@ main = do
                                                        , ppLayout   = xmobarColor blue_ ""
                                                        -- order of things in xmobar
                                                        , ppOrder  = \(ws:l:t:ex) -> [ws,l]++ex++[t]
-                                                       } >>  updatePointer (0.5, 0.5) (0, 0) -- exact centre of window
+                                                       } 
+                                                       >>  updatePointer (0.5, 0.5) (0, 0) -- exact centre of window
+                                                       >> fadeInactiveLogHook 0.90         -- Trancperncy Window (max  = 1)
                                } `additionalKeysP` myKeys
-
 
