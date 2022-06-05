@@ -56,44 +56,56 @@ set colorcolumn=110
 set noshowmode
 set laststatus=2
 set belloff=all
-set mouse=a       
+" set mouse=a       
 "set cursorline
-" set cursorcolumn
+"set cursorcolumn
 
 	"---------Search--------"
-set ignorecase     " Do case insensitive matching
-set incsearch      " Show partial matches for a search phrase
-set hlsearch     " clear highlights after search
+set ignorecase          " Do case insensitive matching
+set incsearch           " Show partial matches for a search phrase
+set hlsearch            " clear highlights after search
 
 	"---------Tab----------"
-set tabstop=4      " Tab size
-set shiftwidth=4   " Indentation size
-set softtabstop=4  " Tabs/Spaces interop
-set expandtab      " Expands tab to spaces
-set smarttab       " Better tabs
+set tabstop=4          " Tab size
+set shiftwidth=4       " Indentation size
+set softtabstop=4      " Tabs/Spaces interop
+set expandtab          " Expands tab to spaces
+set smarttab           " Better tabs
 "----------------------------------------------------------------}}}
 
-" -----------------Plugins -------------- {{{
+" -----------------Plugins ----------------- {{{
 call plug#begin('~/.vim/plugged')
-Plug 'dracula/vim'
+Plug 'ghifarit53/tokyonight-vim'
 Plug 'vim-airline/vim-airline'
 Plug 'Yggdroot/indentLine'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-commentary'
 Plug 'jiangmiao/auto-pairs'
+Plug 'mattn/emmet-vim'
 Plug 'alvan/vim-closetag'
 Plug 'lilydjwg/colorizer'
 Plug 'pangloss/vim-javascript'
 call plug#end()
-"--------------------------------------------}}}
+"---------------------------------------------}}}
 
 " ------- ColorScheme and backgrounds ------ {{{
-set background=dark
-colorscheme dracula
+let g:tokyonight_style = 'night' " available: night, storm
+let g:tokyonight_enable_italic = 1
+let g:airline_theme = "tokyonight"
+colorscheme tokyonight
 hi Normal ctermbg=NONE
-" ------------------------------------------ }}}
+" transparent bg
+autocmd vimenter * hi Normal guibg=NONE ctermbg=NONE
+" For Vim<8, replace EndOfBuffer by NonText
+autocmd vimenter * hi EndOfBuffer guibg=NONE ctermbg=NONE
+"}}}
 
 " -------------Indent Line -----------------{{{
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 "}}}
 
+" ---------------Emmet Vim Html 5 -------------{{{
+" let g:user_emmet_mode='n'    "only enable normal mode functions.
+" let g:user_emmet_mode='inv'  "enable all functions, which is equal to
+let g:user_emmet_mode='a'    "enable all function in all mode."
+" }}}

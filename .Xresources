@@ -1,5 +1,5 @@
 !!!!!!!!!!!!!!!!!!!!!! Font !!!!!!!!!!!!!!!!!!!!!!!!!!
-*.font: xft:JetBrains Mono:style=Bold:pixelsize=12:antialias=true:autohint=true
+*.font: xft:JetBrains Mono:style=Regular:pixelsize=12:antialias=true:autohint=true
 *.boldFont: xft:JetBrains Mono:pixelsize=12:antialias=true:autohint=true
 *.italicFont: xft:JetBrains Mono:pixelsize=12:antialias=true:autohint=true
 *.boldItalicFont: xft:JetBrains Mono:pixelsize=12:antialias=true:autohint=true
@@ -40,5 +40,4 @@
 ! Whites
 *color7: #C3BAC6
 *color15: #D9E0EE
-
 
