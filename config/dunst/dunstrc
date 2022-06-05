@@ -19,7 +19,7 @@
     separator_color = frame
     sort = yes
     idle_threshold = 120
-    font = JetBrains Mono 12
+    font = JetBrains Mono 10
     line_height = 0
     markup = full
     format = "<b>%s</b>\n%b"
@@ -35,7 +35,7 @@
     icon_position = left
     min_icon_size = 0
     max_icon_size = 32
-    icon_path = /usr/share/icons/Papirus-Dark/48x48/apps:/usr/share/icons/Papirus-Dark/48x48/categories:/usr/share/icons/Papirus-Dark/48x48/devices:/usr/share/icons/Papirus-Dark/48x48/emblems:/usr/share/icons/Papirus-Dark/48x48/mimetypes:/usr/share/icons/Papirus-Dark/48x48/places:/usr/share/icons/Papirus-Dark/48x48/status
+    icon_path = /home/xarch/.local/share/icons/fontawesome
     sticky_history = yes
     history_length = 20
     always_run_script = true
