@@ -37,6 +37,3 @@ Config {
        , alignSep       = "}{"
        , template       = " <icon=arch.xpm/><fc=#0db9d7> <fn=2></fn></fc> %UnsafeStdinReader%}{<box type=Bottom width=2 mb=2 color=#a9b1d6><fc=#a9b1d6><fn=3></fn> %uname%</fc></box>   <box type=Bottom width=2 mb=2 color=#f7768e><fc=#f7768e>%cpu%</fc></box>   <box type=Bottom width=2 mb=2 color=#9ece6a><fc=#9ece6a>%memory%</fc></box>   <box type=Bottom width=2 mb=2 color=#e0af68><fc=#e0af68>%disku%</fc></box>   <box type=Bottom width=2 mb=2 color=#7aa2f7><fc=#7aa2f7>%battery%</fc></box>   <box type=Bottom width=2 mb=2 color=#ad8ee6><fc=#ad8ee6>%uptime%</fc></box>   <box type=Bottom width=2 mb=2 color=#449dab>%default:Master%</box>   <box type=Bottom width=2 mb=2 color=#787c99><fc=#787c99>%bright%</fc></box>   <box type=Bottom width=2 mb=2 color=#7da6ff><fc=#7da6ff>%date%</fc></box> "
        }
-
-
-
