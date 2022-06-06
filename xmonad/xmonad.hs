@@ -133,7 +133,8 @@ myShowWNameTheme = def
                 }
 
 myTopBar = noFrillsDeco shrinkText myTopBarTheme
-myTopBarTheme = def { fontName      = myFont
+myTopBarTheme = def 
+               { fontName      = myFont
               , activeColor         = blue
               , activeBorderColor   = blue
               , activeBorderWidth   = 20
@@ -148,7 +149,7 @@ myTopBarTheme = def { fontName      = myFont
               , urgentTextColor     = red
               , decoWidth           = 20
               , decoHeight          = 20
-}
+              }
 
 -------------------- Base Layout ------------------------
 myTabTheme      = def
@@ -266,11 +267,11 @@ twoTabbed       = renamed [Replace "TWO TABBED"]
                               (ClassName "firefox")
 
 ---------------------------- Usage ------------------------------
-allLayouts = tall ||| full ||| twoPane ||| threeColMid ||| oneBig ||| dishes ||| grid
-webLayouts = oneBig ||| threeColMid ||| dishes ||| tall
-codeLayouts = tabs ||| twoPane ||| dishes
+allLayouts  = tall ||| full ||| twoPane ||| threeColMid ||| oneBig ||| dishes ||| circle ||| grid  ||| spirals ||| masterTabbed ||| oneUp ||| twoTabbed
+webLayouts  = masterTabbed ||| twoTabbed ||| oneUp ||| oneBig ||| threeColMid ||| dishes ||| tall
+codeLayouts = dishes ||| twoPane ||| tabs 
 chatLayouts = grid ||| threeColMid ||| tall
-youtubeLayouts = oneBig ||| full
+youtubeLayouts  = oneBig ||| full
 settingsLayouts = circle ||| grid ||| spirals ||| floats
 mediaLayout = circle ||| spirals ||| floats
 gameLayout  = masterTabbed |||floats
@@ -301,20 +302,20 @@ myKeys =            -- Programme --
          , ("M-<Print>",    spawn "scrot -u -F ~/pix/screen/%Y-%m-%d-%T-screenshot.png && notify-send -t 800 'ScreenShot Takeen' 'Saved in ~/pix/screen/'"  )
 
                     -- Audio ---
-         , ("<F8>",         spawn "pactl set-sink-volume @DEFAULT_SINK@ -10% && notify-send -t 200 `pulsemixer --get-volume | awk '{print $1}'`" )
-         , ("<F9>",         spawn "pactl set-sink-volume @DEFAULT_SINK@ +10% && notify-send -t 200 `pulsemixer --get-volume | awk '{print $1}'`" )
-         , ("<F10>",        spawn "pactl set-source-mute @DEFAULT_SOURCE@ toggle  && notify-send -t 200 'Toggle mute Mic button'"     )
-         , ("<F11>",        spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle && notify-send -t 200 'Toggle mute button!'"             )
+         , ("C-<F8>",         spawn "pactl set-sink-volume @DEFAULT_SINK@ -10% && notify-send -t 200 `pulsemixer --get-volume | awk '{print $1}'`" )
+         , ("C-<F9>",         spawn "pactl set-sink-volume @DEFAULT_SINK@ +10% && notify-send -t 200 `pulsemixer --get-volume | awk '{print $1}'`" )
+         , ("C-<F10>",        spawn "pactl set-source-mute @DEFAULT_SOURCE@ toggle  && notify-send -t 200 'Toggle mute Mic button'"     )
+         , ("C-<F11>",        spawn "pactl set-sink-mute @DEFAULT_SINK@ toggle && notify-send -t 200 'Toggle mute button!'"             )
 
                     -- Brightenss --
-        , ("<F4>",          spawn "xbacklight -set 50 && notify-send -t 200 `xbacklight -get`")
-        , ("<F5>",          spawn "xbacklight -dec 10 && notify-send -t 200 `xbacklight -get`")
-        , ("<F6>",          spawn "xbacklight -inc 10 && notify-send -t 200 `xbacklight -get`")
-        , ("<F7>",          spawn "xbacklight -set 100 && notify-send -t 200 `xbacklight -get`")
+        , ("C-<F4>",          spawn "xbacklight -set 50 && notify-send -t 200 `xbacklight -get`")
+        , ("C-<F5>",          spawn "xbacklight -dec 10 && notify-send -t 200 `xbacklight -get`")
+        , ("C-<F6>",          spawn "xbacklight -inc 10 && notify-send -t 200 `xbacklight -get`")
+        , ("C-<F7>",          spawn "xbacklight -set 100 && notify-send -t 200 `xbacklight -get`")
 
                     -- Scripts --
-         , ("C-w",          spawn "bash ~/.scripts/rofi/wifiMenu.sh" )
-         , ("C-0",          spawn "bash ~/.scripts/rofi/powerMenu.sh")
+         , ("C-S-w",          spawn "bash ~/.scripts/rofi/wifiMenu.sh" )
+         , ("C-S-0",          spawn "bash ~/.scripts/rofi/powerMenu.sh")
                
 				    -- Scratchpads --
          , ("M-s t",        namedScratchpadAction myScratchPads "terminal")  
@@ -346,8 +347,8 @@ myKeys =            -- Programme --
 
 --------------------------------------------------- ManageHook --------------------------------------------
 myManageHook = composeAll 
-       [className =? "Thunar"            --> doViewShift " 2 "
-     --, className =? "firefox"           --> doViewShift " 3 "
+     [ className =? "firefox"           --> doViewShift " 3 "
+     , className =? "Thunar"            --> doViewShift " 2 "
      , className =? "mpv"               --> doCenterFloat
      , className =? "Sxiv"              --> doCenterFloat
      , className =? "Nitrogen"          --> doCenterFloat
