@@ -47,7 +47,7 @@ compinit
 
 ############ Source ###############
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-# source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 
 ############ Prompt ###############
 # PROMPT='%T %1~ > '
@@ -60,6 +60,7 @@ PS1="%B%{$fg[red]%}[%{$fg[yellow]%}%n%{$fg[green]%}@%{$fg[blue]%}%M %{$fg[magent
 alias x='startx'
 alias x='startx'
 alias v='vim'
+# alias vim='nvim'
 alias f='nnn'
 alias t='htop'
 alias n='clear && neofetch'
@@ -70,12 +71,6 @@ alias cat='bat'
 alias ss='sxiv -f -b'
 alias drive='nnn /run/media/xarch/'
 alias commit='git add -A; git commit -m'
-
-########################## NNN File Manager ############################
-
-
-
-
 
 ############################ Fzf fuzzy finder ###########################
 export FZF_DEFAULT_OPTS="
