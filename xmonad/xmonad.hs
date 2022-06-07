@@ -268,7 +268,7 @@ twoTabbed       = renamed [Replace "TWO TABBED"]
 
 ---------------------------- Usage ------------------------------
 allLayouts  = tall ||| full ||| twoPane ||| threeColMid ||| oneBig ||| dishes ||| circle ||| grid  ||| spirals ||| masterTabbed ||| oneUp ||| twoTabbed
-webLayouts  = masterTabbed ||| twoTabbed ||| oneUp ||| oneBig ||| threeColMid ||| dishes ||| tall
+webLayouts  = oneBig ||| threeColMid ||| dishes ||| tall ||| twoTabbed ||| oneUp 
 codeLayouts = dishes ||| twoPane ||| tabs 
 chatLayouts = grid ||| threeColMid ||| tall
 youtubeLayouts  = oneBig ||| full
