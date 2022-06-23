@@ -15,10 +15,12 @@ import qualified Data.Map as M          -- for Floating Window
 -------- Actions ---------
 import XMonad.Actions.UpdatePointer
 import XMonad.Actions.FindEmptyWorkspace
-import XMonad.Actions.WithAll (killAll, sinkAll)
 import XMonad.Actions.Minimize
-import XMonad.Actions.WindowGo (raiseBrowser)
 import XMonad.Actions.CycleWS
+import XMonad.Actions.WithAll (killAll, sinkAll)
+import XMonad.Actions.WindowGo (raiseBrowser)
+import XMonad.Actions.RotSlaves (rotSlavesUp)
+import XMonad.Actions.WindowBringer (gotoMenu, bringMenu)
 
 --------- Hooks ----------
 import XMonad.ManageHook (doFloat)                                                              --for manageHook
@@ -50,7 +52,6 @@ import XMonad.Layout.MultiToggle
 import XMonad.Layout.MultiToggle.Instances
 
 --------- layout ---------
-import XMonad.Layout.NoFrillsDecoration
 import XMonad.Layout.ResizableTile
 import XMonad.Layout.ThreeColumns
 import XMonad.Layout.OneBig
@@ -92,7 +93,7 @@ white_       = "#acb0d0"
 --------------------------------------------- Variable XMonad --------------------------------------------
 myModMask       = mod1Mask                                                          -- Sets Mod Key to alt/Super/Win/Fn.
 myTerminal      = "kitty"                                                           -- Sets default Terminal Emulator.
-myBorderWidth   = 0                                                                 -- Sets Border Width in pixels.
+myBorderWidth   = 1                                                                 -- Sets Border Width in pixels.
 myNormalColor   = bg                                                                -- Border color of normal windows.
 myFocusedColor  = blue                                                              -- Border color of focused windows.
 myFont          = "xft:JetBrains Mono:Regular:size=10"
@@ -118,7 +119,7 @@ myStartupHook = do
     spawnOnce "dunst"                                                               -- notfiction
     spawnOnce "unclutter"                                                           -- hidden Mouse
     spawnOnce "nitrogen --restore"                                                  -- feh is the alternative "feh --bg-scale /directory/of/desired/background &"
-    spawnOnce "xset r rate 300 55"                                                  -- speeds cursor in urxvt
+    spawnOnce "xset r rate 255 55"                                                  -- speeds cursor in urxvt
     spawnOnce "picom --experimental-backends -b"                                    -- Compositor
     setDefaultCursor xC_left_ptr                                                    -- Default Cursor
 
@@ -131,26 +132,7 @@ myShowWNameTheme = def
                 , swn_bgcolor           = bg
                 , swn_color             = blue
                 }
-
-myTopBar = noFrillsDeco shrinkText myTopBarTheme
-myTopBarTheme = def 
-               { fontName           = myFont
-              , activeColor         = blue
-              , activeBorderColor   = blue
-              , activeBorderWidth   = 15
-              , activeTextColor     = bg
-              , inactiveColor       = black
-              , inactiveBorderColor = black
-              , inactiveBorderWidth = 15
-              , inactiveTextColor   = bg
-              , urgentColor         = red
-              , urgentBorderColor   = red
-              , urgentBorderWidth   = 15
-              , urgentTextColor     = red
-              , decoWidth           = 15
-              , decoHeight          = 15
-              }
-
+--
 -------------------- Base Layout ------------------------
 myTabTheme      = def
                 { fontName              = myFont
@@ -170,42 +152,36 @@ tabs            = renamed [Replace "TABBED"]
                 $ tabbed shrinkText myTabTheme
 
 threeColMid     = renamed [Replace "THREECOLMID"] 
-                $ myTopBar
                 $ maximizeWithPadding 16 
                 $ minimize 
                 $ mySpacings 
                 $ ThreeColMid 1 (3/100) (1/2)
 
 oneBig          = renamed [Replace "ONEBIG"]      
-                $ myTopBar
                 $ maximizeWithPadding 16 
                 $ minimize 
                 $ mySpacings 
                 $ OneBig (3/4) (3/4)
 
 tall            = renamed [Replace "TILD"]  
-                $ myTopBar
                 $ maximizeWithPadding 16 
                 $ minimize 
                 $ mySpacings 
                 $ ResizableTall 1 (3/100) (1/2) []
 
 twoPane         = renamed [Replace "TWOPANE"]
-                $ myTopBar
                 $ maximizeWithPadding 16
                 $ minimize
                 $ mySpacings
                 $ TwoPanePersistent Nothing (3/100) (1/2)
 
 dishes          = renamed [Replace "DISHES"]
-                $ myTopBar
                 $ maximizeWithPadding 16
                 $ minimize
                 $ mySpacings
                 $ Dishes 2 (1/5)
 
 circle          = renamed [Replace "CIRCLE"]
-                $ myTopBar
                 $ maximizeWithPadding 16
                 $ minimize
                 $ mySpacings
@@ -213,7 +189,6 @@ circle          = renamed [Replace "CIRCLE"]
 
 
 floats          =  renamed [Replace "FLOAT"]    
-                $ myTopBar
                 $ maximizeWithPadding 16 
                 $ minimize 
                 $ myGaps 
@@ -221,7 +196,6 @@ floats          =  renamed [Replace "FLOAT"]
                 $ simplestFloat
 
 grid            = renamed [Replace "GRID"]
-                $ myTopBar
                 $ mySpacings
                 $ maximizeWithPadding 16
                 $ maximize
@@ -230,7 +204,6 @@ grid            = renamed [Replace "GRID"]
                 $ GridRatio (4/3) False
 
 spirals         = renamed [Replace "spirals"]
-                $ myTopBar
                 $ maximizeWithPadding 16
                 $ maximize
                 $ minimize
@@ -250,7 +223,6 @@ masterTabbed    = renamed [Replace "MASTER TABBED"]
                 $ mastered (1/100) (1/2) $ tabbed shrinkText myTabTheme
 
 oneUp           = renamed [Replace "1UP"]
-                $ myTopBar
                 $ mySpacings 
                 $ combineTwoP (ThreeCol 1 (3/100) (1/2))
                                     (Simplest)
@@ -295,8 +267,8 @@ myKeys =            -- Programme --
 
                     -- ScreenShoot --
          , ("<Print>",      spawn "scrot -F ~/pix/screen/%Y-%m-%d-%T-screenshot.png && notify-send -t 800 'ScreenShot Takeen' 'Saved in ~/pix/screen/'"     )
-         , ("S-<Print>",    spawn "scrot -s -F ~/pix/screen/%Y-%m-%d-%T-screenshot.png && notify-send -t 800 'ScreenShot Takeen' 'Saved in ~/pix/screen/'"  )
          , ("M-<Print>",    spawn "scrot -u -F ~/pix/screen/%Y-%m-%d-%T-screenshot.png && notify-send -t 800 'ScreenShot Takeen' 'Saved in ~/pix/screen/'"  )
+         , ("M-S-<Print>",  spawn "scrot -s -F ~/pix/screen/%Y-%m-%d-%T-screenshot.png && notify-send -t 800 'ScreenShot Takeen' 'Saved in ~/pix/screen/'"  )
 
                     -- Audio ---
          , ("<F8>",         spawn "pactl set-sink-volume @DEFAULT_SINK@ -10% && notify-send -t 200 `pulsemixer --get-volume | awk '{print $1}'`" )
@@ -310,45 +282,52 @@ myKeys =            -- Programme --
         , ("<F6>",          spawn "xbacklight -inc 10 && notify-send -t 200 `xbacklight -get`")
         , ("<F7>",          spawn "xbacklight -set 100 && notify-send -t 200 `xbacklight -get`")
 
-                    -- Scripts --
-         , ("C-w",          spawn "bash ~/.scripts/rofi/wifiMenu.sh" )
-         , ("C-0",          spawn "bash ~/.scripts/rofi/powerMenu.sh")
-               
 				    -- Scratchpads --
-         , ("M-s t",        namedScratchpadAction myScratchPads "terminal")  
-         , ("M-s s",        namedScratchpadAction myScratchPads "cmus")        
-         , ("M-s w",        namedScratchpadAction myScratchPads "browser")        
+        , ("M-s t",        namedScratchpadAction myScratchPads "terminal")  
+        , ("M-s s",        namedScratchpadAction myScratchPads "cmus"    )        
+        , ("M-s w",        namedScratchpadAction myScratchPads "browser" )        
+                    
+                    -- Scripts --
+        , ("C-w",          spawn "bash ~/prjct/scripts/rofi/wifiMenu.sh" )
+        , ("C-0",          spawn "bash ~/prjct/scripts/rofi/powerMenu.sh")
+               
             
                             -- cmus --
-         , ("M-C-S-z",         spawn "cmus-remote -r")
-         , ("M-C-S-x",         spawn "cmus-remote -p")
-         , ("M-C-S-c",         spawn "cmus-remote -u")
-         , ("M-C-S-v",         spawn "cmus-remote -s")
-         , ("M-C-S-b",         spawn "cmus-remote -n")
-
+        , ("M-C-S-z",         spawn "cmus-remote -r")
+        , ("M-C-S-x",         spawn "cmus-remote -p")
+        , ("M-C-S-c",         spawn "cmus-remote -u")
+        , ("M-C-S-v",         spawn "cmus-remote -s")
+        , ("M-C-S-b",         spawn "cmus-remote -n")
+        
+                -- Increase/decrease spacing (gaps)
+        , ("M-C-j", decWindowSpacing 4              )                -- Decrease window spacing
+        , ("M-C-k", incWindowSpacing 4              )                -- Increase window spacing
+        , ("M-C-h", decScreenSpacing 4              )                -- Decrease screen spacing
+        , ("M-C-l", incScreenSpacing 4              )                -- Increase screen spacing
 
                     --  Modifiers Layout --
-         , ("M-t", withFocused toggleFloat                          ) {-- Floating window --}
-         , ("M-f",          sendMessage $ Toggle FULL               ) {--Full Screen --}
-         , ("M-e",          viewEmptyWorkspace                      ) {-- Find Empty Workspaces --}
-         , ("M-g",          tagToEmptyWorkspace                     ) {-- Go To workspaces --}
-         , ("M-x",          withFocused (sendMessage . maximizeRestore)) {----For Maximaze With Paddings --}
-         , ("M-n",          withFocused minimizeWindow                 ) {-- For Minimize && Action minimize --}
-         , ("M-S-n",        withLastMinimized maximizeWindowAndFocus   ) {-- For Minimize && Action minimize --}
-         , ("M-S-a",        killAll                                 ) {-- Quite All --}
-         , ("M-S-t",        sinkAll                                 ) {-- Push ALL floating windows to tile.--}
-         , ("M-S-s",        sendMessage $ SwapWindow                ) {-- Compine Two Layout [XM-comboP]--}
+        , ("M-t",          withFocused toggleFloat                 ) {-- Floating window --}
+        , ("M-f",          sendMessage $ Toggle FULL               ) {--Full Screen --}
+        , ("M-S-f",        withFocused (sendMessage . maximizeRestore)) {----For Maximaze With Paddings --}
+        , ("M-e",          viewEmptyWorkspace                      ) {-- Find Empty Workspaces --}
+        , ("M-g",          tagToEmptyWorkspace                     ) {-- Go To workspaces --}
+        , ("M-n",          withFocused minimizeWindow                 ) {-- For Minimize && Action minimize --}
+        , ("M-S-n",        withLastMinimized maximizeWindowAndFocus   ) {-- For Minimize && Action minimize --}
+        , ("M-S-a",        killAll                                 ) {-- Quite All --}
+        , ("M-S-t",        sinkAll                                 ) {-- Push ALL floating windows to tile.--}
+        , ("M-S-s",        sendMessage $ SwapWindow                ) {-- Compine Two Layout [XM-comboP]--}
+        , ("M-r",          rotSlavesUp                             ) {-- Rotate window--}
+        , ("M-p",          gotoMenu                                ) {-- Find Window  in dmenu --}
+        , ("M-b",          bringMenu                               ) {-- swap window To Current WS --}
 
-                    -- Resize layout --
-         , ("M-C-j",        sendMessage MirrorShrink) {-- For Layout ResizableTile( Tiled ) -}
-         , ("M-C-k",        sendMessage MirrorExpand) {-- For Layout ResizableTile( Tiled ) -}
+                   -- Resize layout --
+        , ("M-a",        sendMessage MirrorExpand) {-- For Layout ResizableTile( Tiled ) -}
+        , ("M-z",        sendMessage MirrorShrink) {-- For Layout ResizableTile( Tiled ) -}
          ]
         where 
             toggleFloat w = windows (\s -> if M.member w (W.floating s)
                             then W.sink w s
                             else (W.float w (W.RationalRect (1/6) (1/6) (2/3) (2/3)) s))
-
-
 
 --------------------------------------------------- ManageHook --------------------------------------------
 myManageHook = composeAll 
@@ -357,6 +336,7 @@ myManageHook = composeAll
      , className =? "mpv"               --> doViewShift " 9 "
      , className =? "Sxiv"              --> doCenterFloat
      , className =? "Nitrogen"          --> doCenterFloat
+     , className =? "Xmessage"          --> doCenterFloat
      , className =? "download"          --> doFloat
      , className =? "error"             --> doFloat
      , className =? "Gimp"              --> doFloat
@@ -392,7 +372,7 @@ myScratchPads = [ NS "terminal" spawnTerm findTerm manageTerm
 
 -------------------------------------------------- Aplicy All   -------------------------------------------
 main = do
-    xmproc <- spawnPipe "xmobar ~/.config/xmobar/xmobar.hs"
+    xmproc <- spawnPipe "xmobar ~/.xmonad/xmobar/xmobar.hs"
     xmonad $ docks def {  modMask                   = myModMask
                         , terminal                  = myTerminal
                         , borderWidth               = myBorderWidth
